@@ -20,35 +20,32 @@ git clone --recursive <the-repo-url>
 cd ./pybind11-setup
 ```
 
+For use of pip, please install scikit-build-core: ```pip install scikit-build-core build```
+
+## Build
+
+Pip build:
+
+```bash
+./build-pip
+```
+
+Cmake and Make/Ninja build:
+
 Debug Mode:
 
 ```bash
-chmod u+x build-debug.sh
-./build-debug.sh
+n/a
 ```
 
 Release Mode:
 
 ```bash
-chmod u+x build-release.sh
-./build-release.sh
-```
-
-Or if using pip install `scikit-build-core`; that is, ```pip install scikit-build-core build```,
-then execute:
-
-```bash
-mkdir build
-pip install .
+n/a
 ```
 
 > [!NOTE]
-> If required to rebuild, simply rerun the bash file in specific mode. If using pip,
-> run the following in root directory:
-
-```bash
-pip install . --force-reinstall
-```
+> If required to rebuild, just execute ```./build-pip``` again
 
 ## License
 
