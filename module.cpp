@@ -1,6 +1,8 @@
 #include <pybind11/pybind11.h>
 
-namespace py = pybind11;
+// ----------------
+// regular C++ code
+// ----------------
 
 float add_fn(float arg1, float arg2) {
     return arg1 + arg2;
@@ -23,6 +25,12 @@ public:
       return multiplier;
     }
 };
+
+// ----------------
+// Python interface
+// ----------------
+
+namespace py = pybind11;
 
 PYBIND11_MODULE(pymodule_test, handle) {
     handle.doc() = "This is a module doc thingy.";
