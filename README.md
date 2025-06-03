@@ -1,13 +1,14 @@
-# pybind11-setup
+# PhysicsDMD
 
-A minimal example of using [pybind11](https://github.com/pybind/pybind11) to create a Python module from C++.
+A Physics program using Dynamic Mode Decomposition (DMD), incorporating the use of [pybind11](https://github.com/pybind/pybind11)
+to create a Python module from C++.
 
 ## Prerequisites
 
 - A compiler with **C++17** support
 - **CMake ≥ 3.14** (3.14+ is required on Windows; 3.4 is no longer valid with modern CMake)
 - **Python ≥ 3.6**
-- (Recommended) [pip](https://pip.pypa.io/) for `pyproject.toml` (Requires Ninja if using Linux/MacOS)
+- (Recommended) [pip](https://pip.pypa.io/) for `pyproject.toml` (Use Ninja or Make if using Linux/MacOS)
 
 ## Installation
 
@@ -15,7 +16,7 @@ Clone this repository and note the `--recursive` option which is
 needed for the pybind11 submodule:
 
 ```bash
-git clone --recursive <your-repo-url>
+git clone --recursive <the-repo-url>
 cd ./pybind11-setup
 ```
 
@@ -33,7 +34,7 @@ chmod u+x build-release.sh
 ./build-release.sh
 ```
 
-Or if using pip install `scikit-build-core` and `pybind11`, that is ```pip install scikit-build-core pybind11 build```,
+Or if using pip install `scikit-build-core`; that is, ```pip install scikit-build-core build```,
 then execute:
 
 ```bash
