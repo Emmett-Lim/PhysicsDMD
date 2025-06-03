@@ -49,6 +49,11 @@ n/a
 
 ## License
 
-Pybind11 is provided under a BSD-style license that can be found in the LICENSE
-file. By using, distributing, or contributing to this project, you agree to the
-terms and conditions of this license.
+This project uses and incorporates third-party libraries under their respective licenses:
+
+### Pybind11
+[Pybind11](https://github.com/pybind/pybind11) is provided under a BSD-style license that can be found in the [LICENSE](https://github.com/pybind/pybind11/blob/master/LICENSE)
+file.
+
+### Eigen
+[Eigen](http://eigen.tuxfamily.org) is [Free Software](https://www.gnu.org/philosophy/free-sw.html), licensed under the [MPL2](https://www.mozilla.org/en-US/MPL/2.0/), which is a simple weak copyleft license. A copy of the license is provided in ```external/lib/eigen/LICENSE```
