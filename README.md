@@ -13,7 +13,7 @@ to create a Python module from C++.
 ## Installation
 
 Clone this repository and note the `--recursive` option which is
-needed for the pybind11 submodule:
+needed for the Pybind11 and Eigen submodule:
 
 ```bash
 git clone --recursive <the-repo-url>
