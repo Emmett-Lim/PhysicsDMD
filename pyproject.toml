@@ -1,0 +1,16 @@
+[build-system]
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "module_add"
+version = "0.1.0"
+description = "My pybind11 + CMake module"
+authors = [{ name = "Emmett Lim", email = "emmettkl06@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.8"
+
+[tool.scikit-build]
+cmake.minimum-version = "3.14"
+build-dir = "build"
+sdist.include = ["external/lib/pybind11/"]
