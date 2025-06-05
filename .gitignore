@@ -37,7 +37,11 @@ ehthumbs.db
 Thumbs.db
 
 # Other Files #
-##############
+###############
+data/*
+
+# Other Directories #
+#####################
 build/
 .vscode/
 __pycache__

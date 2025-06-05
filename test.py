@@ -1,6 +1,8 @@
 import mylib.pymodule_test
 from mylib.pymodule_test import *
 
+# Warnings coming from using wildcard (*) when importing
+
 # print(dir(mylib.pymodule_test))
 
 help(add_fn_python)
