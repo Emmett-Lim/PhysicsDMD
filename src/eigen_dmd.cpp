@@ -6,6 +6,7 @@
 // ----------------
 */
 
+
 /*
 // [ TODO ]:
 // 1.) Extract data into matrix X (current) and Y (future)
@@ -21,6 +22,35 @@
 // - x_coord.txt    --> x data corresponding to each column from y data (potentially spatial position correlated to y frames?)
 */
 
+
+
+void EigenDMD::separateSnapshots(const Eigen::MatrixXcd& complex_matrix) {
+    /*
+    // Copy values from complex_matrix and split into two snapshots
+    // _x_current   containing data from [0, (n-1)]
+    // _x_next      containing data from [1, n]
+    */
+
+    int column_size = static_cast<int>(complex_matrix.cols() - 1);
+
+    _x_current  = complex_matrix.block(0, 0, complex_matrix.rows(), column_size);
+    _x_next     = complex_matrix.block(0, 1, complex_matrix.rows(), column_size);
+}
+
+void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix) {
+    if (static_cast<int>(complex_matrix.size()) == 0) {
+        std::cout << "Cannot compute DMD on empty matrix!\n";
+        return;
+    }
+
+    // Separate the complex matrix into current and next/future snapshots
+    separateSnapshots(complex_matrix);
+
+    // Calculate Reduced SVD of _x_current (not sure about rank...)
+    // NOTE: For SVD, might need to use Eigen::BDCSVD since dealing w/ large dataset.
+    
+
+}
 
 
 
