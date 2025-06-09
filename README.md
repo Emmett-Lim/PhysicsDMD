@@ -27,7 +27,7 @@ For use of pip, please install scikit-build-core: ```pip install scikit-build-co
 Pip build:
 
 ```bash
-./build-pip
+./build-pip.sh
 ```
 
 Cmake and Make/Ninja build:
@@ -45,7 +45,7 @@ n/a
 ```
 
 > [!NOTE]
-> If required to rebuild, just execute ```./build-pip``` again
+> If required to rebuild, just execute ```./build-pip.sh``` again
 
 ## License
 
