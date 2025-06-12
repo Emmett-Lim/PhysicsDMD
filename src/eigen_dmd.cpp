@@ -25,20 +25,21 @@
 
 
 void EigenDMD::separateSnapshots(const Eigen::MatrixXcd& complex_matrix) {
-    /*
+    /* [ === NOT UNIT TESTED == ]
     // Copy values from complex_matrix and split into two snapshots
-    // _x_current   containing data from [0, (n-1)]
-    // _x_next      containing data from [1, n]
+    // _x_current   containing data from [1, (n-1)]
+    // _x_next      containing data from [2, n]
     */
 
     int column_size = static_cast<int>(complex_matrix.cols() - 1);
+    int row_size    = static_cast<int>(complex_matrix.rows());
 
-    _x_current  = complex_matrix.block(0, 0, complex_matrix.rows(), column_size);
-    _x_next     = complex_matrix.block(0, 1, complex_matrix.rows(), column_size);
+    _x_current  = complex_matrix.block(0, 0, row_size, column_size);
+    _x_next     = complex_matrix.block(0, 1, row_size, column_size);
 }
 
 void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix) {
-    if (static_cast<int>(complex_matrix.size()) == 0) {
+    if (static_cast<int>(complex_matrix.size()) <= 1) {
         std::cout << "Cannot compute DMD on empty matrix!\n";
         return;
     }
@@ -86,7 +87,7 @@ PYBIND11_MODULE(eigen_dmd, handle) {
     handle.doc() = "Module used to calculate DMD via Eigen library.";
 
     /*
-        === TEST CLASS ===
+    //  === TEST CLASS ===
     */
     py::class_<MyTestClass>(handle, "MatrixTest")
         .def(py::init<>())
@@ -96,7 +97,7 @@ PYBIND11_MODULE(eigen_dmd, handle) {
         .def("test_matrix", &MyTestClass::testMatrix)
         ;
     /*
-        === TEST CLASS ===
+    //  === TEST CLASS ===
     */
 
 
