@@ -1,7 +1,7 @@
 #ifndef EIGEN_DMD_HPP
 #define EIGEN_DMD_HPP
 
-//#include <cmath>
+#include <cmath>
 #include <complex>
 #include <iostream>
 
@@ -12,7 +12,7 @@
 
 /*
 // [ TODO ]:
-// - 
+// -
 */
 
 
@@ -22,7 +22,9 @@ class EigenDMD {
         ~EigenDMD() {}
 
         void standardDMD(const Eigen::MatrixXcd& complex_matrix);   // complex double values
-        void standardDMD(const Eigen::MatrixXcf& complex_matrix);    // complex float values
+        void standardDMD(const Eigen::MatrixXcd& complex_matrix,
+                                        const int reduced_rank);    // complex double values (reduced matrix)
+        //void standardDMD(const Eigen::MatrixXcf& complex_matrix);   // complex float values
 
     private:
         Eigen::MatrixXcd _x_current, _x_next;

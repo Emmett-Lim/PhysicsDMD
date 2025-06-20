@@ -20,15 +20,16 @@
 // - Python for UI, C++ for Computational purposes
 // - y_frames.npy   --> array size: (200, 50); y data
 // - x_coord.txt    --> x data corresponding to each column from y data (potentially spatial position correlated to y frames?)
+// - Change standardDMD algo to return int type to catch errors?
 */
 
 
 
 void EigenDMD::separateSnapshots(const Eigen::MatrixXcd& complex_matrix) {
     /* [ === NOT UNIT TESTED == ]
-    // Copy values from complex_matrix and split into two snapshots
-    // _x_current   containing data from [1, (n-1)]
-    // _x_next      containing data from [2, n]
+    // Copy values from complex_matrix [n, p] and split into two snapshots
+    // _x_current   containing data from [n, (p-1)]
+    // _x_next      containing data from [(n+1), p]
     */
 
     int column_size = static_cast<int>(complex_matrix.cols() - 1);
@@ -39,18 +40,39 @@ void EigenDMD::separateSnapshots(const Eigen::MatrixXcd& complex_matrix) {
 }
 
 void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix) {
-    if (static_cast<int>(complex_matrix.size()) <= 1) {
-        std::cout << "Cannot compute DMD on empty matrix!\n";
+    if (static_cast<int>(complex_matrix.cols()) <= 1) {
+        std::cout << "Cannot compute DMD on small or empty complex data!\n";
         return;
     }
 
     // Separate the complex matrix into current and next/future snapshots
     separateSnapshots(complex_matrix);
 
-    // Calculate Reduced SVD of _x_current (not sure about rank...)
-    // NOTE: For SVD, might need to use Eigen::BDCSVD since dealing w/ large dataset.
+    // Calculate Reduced/Full SVD of _x_current
+    // NOTE: For SVD, might need to use Eigen::BDCSVD since dealing w/ large dataset, else use Jacobian
+    // WARNING: Check the complier CMake is using - see Eigen documentation regarding BDCSVD
+    // === [ Note: might need to set a reduced rank first, then use ComputeFull ] ===
+
+    Eigen::BDCSVD<Eigen::MatrixXcd> svd(_x_current);
     
 
+
+}
+
+void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, const int reduced_rank) {
+    /* [ === NOT UNIT TESTED == ]
+    // Reference values from complex_matrix [n, reduced_rank] and send into regular standardDMD()
+    */
+
+    int column_size = abs(reduced_rank);
+    int row_size    = static_cast<int>(complex_matrix.rows());
+
+    if (column_size >= complex_matrix.cols()) {
+        std::cout << "Reduced rank equals or exceeds matrix complex data!\n";
+        return;
+    }
+
+    standardDMD(complex_matrix.block(0, 0, row_size, column_size));
 }
 
 
