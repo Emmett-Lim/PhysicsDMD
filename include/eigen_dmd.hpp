@@ -1,9 +1,11 @@
 #ifndef EIGEN_DMD_HPP
 #define EIGEN_DMD_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <complex>
 #include <iostream>
+#include <limits>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
@@ -17,13 +19,12 @@
 
 
 class EigenDMD {
+    
     public:
         EigenDMD() {}
         ~EigenDMD() {}
 
-        void standardDMD(const Eigen::MatrixXcd& complex_matrix);   // complex double values
-        void standardDMD(const Eigen::MatrixXcd& complex_matrix,
-                                        const int reduced_rank);    // complex double values (reduced matrix)
+        void standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank = -1);    // complex double values
         //void standardDMD(const Eigen::MatrixXcf& complex_matrix);   // complex float values
 
     private:
@@ -31,6 +32,7 @@ class EigenDMD {
         Eigen::MatrixXcd _eigenvalues, _dmd_modes;
 
         void separateSnapshots(const Eigen::MatrixXcd& complex_matrix);
+
 };
 
 #endif // EIGEN_DMD_HPP

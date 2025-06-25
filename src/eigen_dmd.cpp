@@ -37,9 +37,11 @@ void EigenDMD::separateSnapshots(const Eigen::MatrixXcd& complex_matrix) {
 
     _x_current  = complex_matrix.block(0, 0, row_size, column_size);
     _x_next     = complex_matrix.block(0, 1, row_size, column_size);
+
 }
 
-void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix) {
+void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank) {
+
     if (static_cast<int>(complex_matrix.cols()) <= 1) {
         std::cout << "Cannot compute DMD on small or empty complex data!\n";
         return;
@@ -53,26 +55,52 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix) {
     // WARNING: Check the complier CMake is using - see Eigen documentation regarding BDCSVD
     // === [ Note: might need to set a reduced rank first, then use ComputeFull ] ===
 
-    Eigen::BDCSVD<Eigen::MatrixXcd> svd(_x_current);
+    Eigen::BDCSVD<Eigen::MatrixXcd> svd(_x_current, Eigen::ComputeFullU | Eigen::ComputeFullV);
     
+    // SVD Original Components (svd = USV*): 
+    Eigen::MatrixXcd u_matrix = svd.matrixU();
+    Eigen::VectorXd  s_values = svd.singularValues();   // Note: Returned as a vector, not a matrix. Use .asDiagonal() to convert into matrix form
+    Eigen::MatrixXcd v_matrix = svd.matrixV();          // Note: This is not given in its adjoint version (V*)
 
+    // Apply rank-reduction if reduced_rank > -1
+    if (reduced_rank >= 0) {
+        int max_rank = std::min(
+            {
+                reduced_rank,
+                static_cast<int>(u_matrix.cols()),
+                static_cast<int>(s_values.size()),
+                static_cast<int>(v_matrix.cols())
+            }
+        );
 
-}
-
-void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, const int reduced_rank) {
-    /* [ === NOT UNIT TESTED == ]
-    // Reference values from complex_matrix [n, reduced_rank] and send into regular standardDMD()
-    */
-
-    int column_size = abs(reduced_rank);
-    int row_size    = static_cast<int>(complex_matrix.rows());
-
-    if (column_size >= complex_matrix.cols()) {
-        std::cout << "Reduced rank equals or exceeds matrix complex data!\n";
-        return;
+        u_matrix = u_matrix.leftCols(max_rank);
+        s_values = s_values.head(max_rank);
+        v_matrix = v_matrix.leftCols(max_rank);
     }
 
-    standardDMD(complex_matrix.block(0, 0, row_size, column_size));
+    // Calculate inverse of the singular values
+    Eigen::VectorXd s_values_inv;
+
+    // Add tolerance to avoid instability when inverting singular values (needs more research)
+    double epsilon   = std::numeric_limits<double>::epsilon();
+    double tolerance = epsilon * std::max(_x_current.rows(), _x_current.cols()) * s_values(0);
+
+    for (int i = 0; i < static_cast<int>(s_values.size()); ++i) {
+        if (s_values(i) > tolerance) {
+            s_values_inv(i) = 1.0 / s_values(i);
+        } else {
+            s_values_inv(i) = 0.0;
+        }
+    }
+
+    Eigen::MatrixXcd s_matrix_inv = s_values_inv.asDiagonal();
+
+    // Get reduced-rank dynamics matrix
+    Eigen::MatrixXcd a_matrix_reduced = u_matrix.adjoint() * _x_next * v_matrix * s_matrix_inv;
+
+    //Get corresponding eigen"stuff" from a_matrix_reduced
+    
+
 }
 
 
@@ -107,6 +135,8 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(eigen_dmd, handle) {
     handle.doc() = "Module used to calculate DMD via Eigen library.";
+
+
 
     /*
     //  === TEST CLASS ===
