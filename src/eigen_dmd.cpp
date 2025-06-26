@@ -48,6 +48,7 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     }
 
     // Separate the complex matrix into current and next/future snapshots
+    std::cout << "Creating separate snapshots.\n";
     separateSnapshots(complex_matrix);
 
     // Calculate Reduced/Full SVD of _x_current
@@ -55,6 +56,7 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     // WARNING: Check the complier CMake is using - see Eigen documentation regarding BDCSVD
     // === [ Note: might need to set a reduced rank first, then use ComputeFull ] ===
 
+    std::cout << "Calculating SVD for current snapshot.\n";
     Eigen::BDCSVD<Eigen::MatrixXcd> svd(_x_current, Eigen::ComputeFullU | Eigen::ComputeFullV);
     
     // SVD Original Components (svd = USV*): 
@@ -64,6 +66,7 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
 
     // Apply rank-reduction if reduced_rank > -1
     if (reduced_rank >= 0) {
+        std::cout << "Applying rank-reduction to results of SVD.\n";
         int max_rank = std::min(
             {
                 reduced_rank,
@@ -79,7 +82,8 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     }
 
     // Calculate inverse of the singular values
-    Eigen::VectorXd s_values_inv;
+    std::cout << "Inverting singular values.\n";
+    Eigen::VectorXd s_values_inv(s_values.size());
 
     // Add tolerance to avoid instability when inverting singular values (needs more research)
     double epsilon   = std::numeric_limits<double>::epsilon();
@@ -134,9 +138,18 @@ public:
 namespace py = pybind11;
 
 PYBIND11_MODULE(eigen_dmd, handle) {
+
     handle.doc() = "Module used to calculate DMD via Eigen library.";
 
-
+    py::class_<EigenDMD>(handle, "EigenDMD")
+        .def(py::init<>())
+        .def("standardDMD",
+             &EigenDMD::standardDMD,
+             "Compute Dynamic Mode Decomposition",
+             py::arg("complex_matrix"),
+             py::arg("reduced_rank") = -1
+            )
+        ;
 
     /*
     //  === TEST CLASS ===
@@ -151,6 +164,5 @@ PYBIND11_MODULE(eigen_dmd, handle) {
     /*
     //  === TEST CLASS ===
     */
-
 
 }
