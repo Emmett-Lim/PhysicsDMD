@@ -57,7 +57,7 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     // === [ Note: might need to set a reduced rank first, then use ComputeFull ] ===
 
     std::cout << "Calculating SVD for current snapshot.\n";
-    Eigen::BDCSVD<Eigen::MatrixXcd> svd(_x_current, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    Eigen::BDCSVD<Eigen::MatrixXcd> svd(_x_current, Eigen::ComputeThinU | Eigen::ComputeThinV); // Unknown as to whether if need Full or Thin
     
     // SVD Original Components (svd = USV*): 
     Eigen::MatrixXcd u_matrix = svd.matrixU();
@@ -100,10 +100,17 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     Eigen::MatrixXcd s_matrix_inv = s_values_inv.asDiagonal();
 
     // Get reduced-rank dynamics matrix
+    std::cout << "Creating reduced-rank dynamics matrix.\n";
     Eigen::MatrixXcd a_matrix_reduced = u_matrix.adjoint() * _x_next * v_matrix * s_matrix_inv;
 
-    //Get corresponding eigen"stuff" from a_matrix_reduced
-    
+    // Get corresponding eigen"stuff" from a_matrix_reduced
+    std::cout << "Computing eigenvalues and eigenvectors.\n";
+    Eigen::ComplexEigenSolver<Eigen::MatrixXcd> complex_eigen;
+    complex_eigen.compute(a_matrix_reduced);
+
+    // Get Exact Dynamic Modes
+    std::cout << "Extracting exact dynamic modes of the system.\n";
+    _dmd_modes = _x_next * v_matrix * s_matrix_inv * complex_eigen.eigenvectors();
 
 }
 
