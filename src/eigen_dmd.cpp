@@ -99,18 +99,21 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
 
     Eigen::MatrixXcd s_matrix_inv = s_values_inv.asDiagonal();
 
-    // Get reduced-rank dynamics matrix
+    // Get reduced-rank dynamic matrix
     std::cout << "Creating reduced-rank dynamics matrix.\n";
-    Eigen::MatrixXcd a_matrix_reduced = u_matrix.adjoint() * _x_next * v_matrix * s_matrix_inv;
+    _dynamic_matrix = u_matrix.adjoint() * _x_next * v_matrix * s_matrix_inv;
 
-    // Get corresponding eigen"stuff" from a_matrix_reduced
+    // Get corresponding eigenvalues and eigenvectors from _dynamic_matrix
     std::cout << "Computing eigenvalues and eigenvectors.\n";
     Eigen::ComplexEigenSolver<Eigen::MatrixXcd> complex_eigen;
-    complex_eigen.compute(a_matrix_reduced);
+    complex_eigen.compute(_dynamic_matrix);
+
+    _eigenvalues  = complex_eigen.eigenvalues();
+    _eigenvectors = complex_eigen.eigenvectors();
 
     // Get Exact Dynamic Modes
     std::cout << "Extracting exact dynamic modes of the system.\n";
-    _dmd_modes = _x_next * v_matrix * s_matrix_inv * complex_eigen.eigenvectors();
+    _dmd_modes = _x_next * v_matrix * s_matrix_inv * _eigenvectors;
 
 }
 

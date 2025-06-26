@@ -28,8 +28,11 @@ class EigenDMD {
         //void standardDMD(const Eigen::MatrixXcf& complex_matrix);   // complex float values
 
     private:
-        Eigen::MatrixXcd _x_current, _x_next;
-        Eigen::MatrixXcd _eigenvalues, _dmd_modes;
+        Eigen::MatrixXcd _x_current, _x_next;           // Snapshots
+        Eigen::MatrixXcd _dynamic_matrix, _dmd_modes;
+
+        Eigen::MatrixXcd _eigenvectors;
+        Eigen::VectorXcd _eigenvalues;
 
         void separateSnapshots(const Eigen::MatrixXcd& complex_matrix);
 
