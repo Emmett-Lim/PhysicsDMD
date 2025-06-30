@@ -9,10 +9,10 @@
 
 /*
 // [ TODO ]:
-// 1.) Extract data into matrix X (current) and Y (future)
-// 2.) Apply SVD
-// 3.) Compute eigenvalues + eigenvectors --> extract eigenvalues
-// 4.) Get DMD Modes
+// 1.) Extract data into matrix X (current) and Y (future) [ DONE ]
+// 2.) Apply SVD [ DONE ]
+// 3.) Compute eigenvalues + eigenvectors --> extract eigenvalues [ DONE ]
+// 4.) Get DMD Modes [ DONE ]
 // 5.) Plotting
 //
 // [ Thoughts ]:
@@ -111,9 +111,10 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     _eigenvalues  = complex_eigen.eigenvalues();
     _eigenvectors = complex_eigen.eigenvectors();
 
-    // Get Exact Dynamic Modes
-    std::cout << "Extracting exact dynamic modes of the system.\n";
-    _dmd_modes = _x_next * v_matrix * s_matrix_inv * _eigenvectors;
+    // Get Exact Dynamic Modes & calculate Mode Amplitudes
+    std::cout << "Extracting exact dynamic modes of the system and calculating mode amplitudes.\n";
+    _dmd_modes  = _x_next * v_matrix * s_matrix_inv * _eigenvectors;
+    _amplitudes = _dmd_modes.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(_x_current.col(0));
 
 }
 
@@ -158,6 +159,16 @@ PYBIND11_MODULE(eigen_dmd, handle) {
              "Compute Dynamic Mode Decomposition",
              py::arg("complex_matrix"),
              py::arg("reduced_rank") = -1
+            )
+        .def("getEigenvalues", 
+             &EigenDMD::getEigenvalues,
+             py::return_value_policy::reference_internal,
+             "Returns 1D data containing complex eigenvalues"
+            )
+        .def("getDynamicModes",
+             &EigenDMD::getDynamicModes,
+             py::return_value_policy::reference_internal,
+             "Returns a 2D matrix containing complex dynamic mode data"
             )
         ;
 
