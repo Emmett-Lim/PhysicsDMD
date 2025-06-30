@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(PhysicsDMD)
 
+message(STATUS "Current CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+
 add_subdirectory(external/lib/pybind11)
 
 pybind11_add_module(eigen_dmd src/eigen_dmd.cpp)
@@ -15,6 +17,6 @@ target_include_directories(eigen_dmd
 pybind11_add_module(pymodule_test module.cpp)
 
 install(TARGETS eigen_dmd pymodule_test
-    LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/mylib        # Linux/macOS
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/mylib        # Windows
+    LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/utils        # Linux/macOS
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/utils        # Windows
 )

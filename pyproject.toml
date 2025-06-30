@@ -11,6 +11,9 @@ readme = "README.md"
 requires-python = ">=3.8"
 
 [tool.scikit-build]
-cmake.minimum-version = "3.14"
+cmake.version = ">=3.14"
 build-dir = "build"
-sdist.include = ["external/lib/pybind11/"]
+sdist.include = [
+    "external/lib/pybind11/",
+    "external/lib/eigen/"
+]

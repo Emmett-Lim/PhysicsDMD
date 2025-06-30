@@ -1,7 +1,7 @@
 import numpy as npy
 import matplotlib.pyplot as mplt
-import mylib.eigen_dmd
-from mylib.eigen_dmd import MatrixTest, EigenDMD
+import utils.eigen_dmd
+from utils.eigen_dmd import MatrixTest, EigenDMD
 
 
 #//# ==== PYTHON VERSION ==== #
@@ -58,17 +58,31 @@ mplt.show()
 dmd = EigenDMD()
 dmd.standardDMD(X.T, reduced_rank=2)
 
-#A = npy.random.randn(100, 80) + 1j * npy.random.randn(100, 80)
-#A = A.astype(npy.complex128)
-#
-#dmd = EigenDMD()
-#dmd.standardDMD(A)
-
 ### === EigenDMD Test === ###
 
-
-
-#data = npy.load("data/y_frames.npy", mmap_mode='r')
+#data  = npy.load("data/y_frames.npy", mmap_mode='r')
+#data2 = npy.loadtxt("data/x_coord.txt")
 #print(data.dtype)
 #print(data)
 #print("Data size: ", data.shape)
+#print("Data2 size: ", data2.shape)
+
+#y_frames = npy.load("data/y_frames.npy", mmap_mode='r')
+#x_coords = npy.loadtxt("data/x_coord.txt")
+#print("y_frames size: ", y_frames.shape)
+#print("x_coords size: ", x_coords.shape)
+#
+#mplt.pcolormesh(x_coords, npy.arange(y_frames.shape[1]), y_frames.real.T, shading='auto')
+#mplt.xlabel("x")
+#mplt.ylabel("Time Index")
+#mplt.title("Real Part of Signal Over Space and Time")
+#mplt.colorbar()
+#
+#mplt.show()
+
+#mplt.plot(x_coords, y_frames[:, 0].real)
+#mplt.title("State at t = 0 over spatial domain")
+#mplt.xlabel("x")
+#mplt.ylabel("Re(y)")
+#
+#mplt.show()

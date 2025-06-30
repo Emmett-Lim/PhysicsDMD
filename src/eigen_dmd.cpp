@@ -18,8 +18,6 @@
 // [ Thoughts ]:
 // - Where to keep data of matrices in (Python or C++)
 // - Python for UI, C++ for Computational purposes
-// - y_frames.npy   --> array size: (200, 50); y data
-// - x_coord.txt    --> x data corresponding to each column from y data (potentially spatial position correlated to y frames?)
 // - Change standardDMD algo to return int type to catch errors?
 */
 
