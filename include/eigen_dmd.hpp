@@ -17,22 +17,19 @@
 // -
 */
 
+struct EigenSVD {
+            Eigen::MatrixXcd _u_matrix;
+            Eigen::VectorXd _s_values;
+            Eigen::MatrixXcd _v_matrix;
+};
 
 class EigenDMD {
-    
-    public:
-        EigenDMD() {}
-        ~EigenDMD() {}
-
-        void standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank = -1);    // complex double values
-        //void standardDMD(const Eigen::MatrixXcf& complex_matrix);   // complex float values
-
-        const Eigen::VectorXcd& getEigenvalues() const { return _eigenvalues; } // Returns 1D data containing complex eigenvalues
-        const Eigen::MatrixXcd& getDynamicModes() const { return _dmd_modes; }  // Returns a 2D matrix containing complex dynamic mode data
-        const Eigen::VectorXcd& getAmplitudes() const { return _amplitudes; }
 
     private:
         Eigen::MatrixXcd _x_current, _x_next;           // Snapshots
+
+        EigenSVD _svd;
+
         Eigen::MatrixXcd _dynamic_matrix, _dmd_modes;
 
         Eigen::MatrixXcd _eigenvectors;
@@ -41,6 +38,19 @@ class EigenDMD {
         Eigen::VectorXcd _amplitudes;
 
         void separateSnapshots(const Eigen::MatrixXcd& complex_matrix);
+    
+    public:
+        EigenDMD() {}
+        ~EigenDMD() {}
+
+        void standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank = -1);    // complex double values
+        //void standardDMD(const Eigen::MatrixXcf& complex_matrix);   // complex float values
+
+        const EigenSVD& getSVDResult() const { return _svd; }
+        const Eigen::VectorXcd& getEigenvalues() const { return _eigenvalues; } // Returns 1D data containing complex eigenvalues
+        const Eigen::MatrixXcd& getEigenvectors() const { return _eigenvectors; }
+        const Eigen::MatrixXcd& getDynamicModes() const { return _dmd_modes; }  // Returns a 2D matrix containing complex dynamic mode data
+        const Eigen::VectorXcd& getAmplitudes() const { return _amplitudes; }
 
 };
 

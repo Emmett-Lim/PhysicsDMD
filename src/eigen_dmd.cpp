@@ -58,9 +58,9 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     Eigen::BDCSVD<Eigen::MatrixXcd> svd(_x_current, Eigen::ComputeThinU | Eigen::ComputeThinV); // Unknown as to whether if need Full or Thin
     
     // SVD Original Components (svd = USV*): 
-    Eigen::MatrixXcd u_matrix = svd.matrixU();
-    Eigen::VectorXd  s_values = svd.singularValues();   // Note: Returned as a vector, not a matrix. Use .asDiagonal() to convert into matrix form
-    Eigen::MatrixXcd v_matrix = svd.matrixV();          // Note: This is not given in its adjoint version (V*)
+    _svd._u_matrix = svd.matrixU();
+    _svd._s_values = svd.singularValues();   // Note: Returned as a vector, not a matrix. Use .asDiagonal() to convert into matrix form
+    _svd._v_matrix = svd.matrixV();          // Note: This is not given in its adjoint version (V*)
 
     // Apply rank-reduction if reduced_rank > -1
     if (reduced_rank >= 0) {
@@ -68,38 +68,38 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
         int max_rank = std::min(
             {
                 reduced_rank,
-                static_cast<int>(u_matrix.cols()),
-                static_cast<int>(s_values.size()),
-                static_cast<int>(v_matrix.cols())
+                static_cast<int>(_svd._u_matrix.cols()),
+                static_cast<int>(_svd._s_values.size()),
+                static_cast<int>(_svd._v_matrix.cols())
             }
         );
 
-        u_matrix = u_matrix.leftCols(max_rank);
-        s_values = s_values.head(max_rank);
-        v_matrix = v_matrix.leftCols(max_rank);
+        _svd._u_matrix = _svd._u_matrix.leftCols(max_rank);
+        _svd._s_values = _svd._s_values.head(max_rank);
+        _svd._v_matrix = _svd._v_matrix.leftCols(max_rank);
     }
 
     // Calculate inverse of the singular values
     std::cout << "Inverting singular values.\n";
-    Eigen::VectorXd s_values_inv(s_values.size());
+    Eigen::VectorXd s_values_inv(_svd._s_values.size());
 
     // Add tolerance to avoid instability when inverting singular values (needs more research)
     double epsilon   = std::numeric_limits<double>::epsilon();
-    double tolerance = epsilon * std::max(_x_current.rows(), _x_current.cols()) * s_values(0);
+    double tolerance = epsilon * std::max(_x_current.rows(), _x_current.cols()) * _svd._s_values(0);
 
-    for (int i = 0; i < static_cast<int>(s_values.size()); ++i) {
-        if (s_values(i) > tolerance) {
-            s_values_inv(i) = 1.0 / s_values(i);
+    for (int i = 0; i < static_cast<int>(_svd._s_values.size()); ++i) {
+        if (_svd._s_values(i) > tolerance) {
+            s_values_inv(i) = 1.0 / _svd._s_values(i);
         } else {
             s_values_inv(i) = 0.0;
         }
     }
 
-    Eigen::MatrixXcd s_matrix_inv = s_values_inv.asDiagonal();
+    Eigen::MatrixXd s_matrix_inv = s_values_inv.asDiagonal();
 
     // Get reduced-rank dynamic matrix
     std::cout << "Creating reduced-rank dynamics matrix.\n";
-    _dynamic_matrix = u_matrix.adjoint() * _x_next * v_matrix * s_matrix_inv;
+    _dynamic_matrix = _svd._u_matrix.adjoint() * _x_next * _svd._v_matrix * s_matrix_inv;
 
     // Get corresponding eigenvalues and eigenvectors from _dynamic_matrix
     std::cout << "Computing eigenvalues and eigenvectors.\n";
@@ -111,7 +111,7 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
 
     // Get Exact Dynamic Modes & calculate Mode Amplitudes
     std::cout << "Extracting exact dynamic modes of the system and calculating mode amplitudes.\n";
-    _dmd_modes  = _x_next * v_matrix * s_matrix_inv * _eigenvectors;
+    _dmd_modes  = _x_next * _svd._v_matrix * s_matrix_inv * _eigenvectors;
     _amplitudes = _dmd_modes.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(_x_current.col(0));
 
 }
@@ -150,6 +150,11 @@ PYBIND11_MODULE(eigen_dmd, handle) {
 
     handle.doc() = "Module used to calculate DMD via Eigen library.";
 
+    py::class_<EigenSVD>(handle, "EigenSVD")
+        .def_readonly("u_matrix", &EigenSVD::_u_matrix)
+        .def_readonly("s_values", &EigenSVD::_s_values)
+        .def_readonly("v_matrix", &EigenSVD::_v_matrix);
+
     py::class_<EigenDMD>(handle, "EigenDMD")
         .def(py::init<>())
         .def("standardDMD",
@@ -158,10 +163,20 @@ PYBIND11_MODULE(eigen_dmd, handle) {
              py::arg("complex_matrix"),
              py::arg("reduced_rank") = -1
             )
+        .def("getSVDResult",
+             &EigenDMD::getSVDResult,
+             py::return_value_policy::reference_internal,
+             "Returns the SVD result that contains a left-matrix u_matrix, right-matrix v_matrix, and singular values s_values"
+            )
         .def("getEigenvalues", 
              &EigenDMD::getEigenvalues,
              py::return_value_policy::reference_internal,
              "Returns 1D data containing complex eigenvalues"
+            )
+        .def("getEigenvectors", 
+             &EigenDMD::getEigenvectors,
+             py::return_value_policy::reference_internal,
+             "Returns 2D data containing complex eigenvectors on each column"
             )
         .def("getDynamicModes",
              &EigenDMD::getDynamicModes,
@@ -169,6 +184,8 @@ PYBIND11_MODULE(eigen_dmd, handle) {
              "Returns a 2D matrix containing complex dynamic mode data"
             )
         ;
+
+
 
     /*
     //  === TEST CLASS ===

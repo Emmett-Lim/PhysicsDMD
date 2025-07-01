@@ -1,5 +1,7 @@
 import numpy as npy
 import matplotlib.pyplot as mplt
+import utils.dmd_plotter
+from utils.dmd_plotter import eigenvalue_spectrum
 import utils.eigen_dmd
 from utils.eigen_dmd import MatrixTest, EigenDMD
 
@@ -47,7 +49,7 @@ X = X1 + X2
 titles = ["$f_1(x,t)$", "$f_2(x,t)$", "$f$"]
 data = [X1, X2, X]
 
-fig = mplt.figure(figsize=(17, 6))
+fig_0 = mplt.figure(figsize=(17, 6))
 for n, title, d in zip(range(131, 134), titles, data):
     mplt.subplot(n)
     mplt.pcolor(xgrid, tgrid, d.real)
@@ -57,6 +59,15 @@ mplt.show()
 
 dmd = EigenDMD()
 dmd.standardDMD(X.T, reduced_rank=2)
+
+svd = dmd.getSVDResult()
+
+eigenvalues = dmd.getEigenvalues()
+eigenvectors = dmd.getEigenvectors()
+
+eigenvalue_spectrum(eigenvalues)
+
+mplt.show()
 
 ### === EigenDMD Test === ###
 
