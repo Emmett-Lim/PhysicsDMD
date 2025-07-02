@@ -1,6 +1,6 @@
 # PhysicsDMD
 
-A Physics program using Dynamic Mode Decomposition (DMD), incorporating the use of [pybind11](https://github.com/pybind/pybind11)
+A Physics program using Dynamic Mode Decomposition (DMD), incorporating the use of [`pybind11`](https://github.com/pybind/pybind11)
 to create a Python module from C++.
 
 ## Prerequisites
@@ -8,9 +8,9 @@ to create a Python module from C++.
 - A compiler with **C++17** support
 - **CMake ≥ 3.14** (3.14+ is required on Windows; 3.4 is no longer valid with modern CMake)
 - **Python ≥ 3.6**
-- (Recommended) [pip](https://pip.pypa.io/) for `pyproject.toml` (Use Ninja or Make if using Linux/MacOS)
-- [numpy](https://pypi.org/project/numpy/) (install via pip)
-- [matplotlib](https://pypi.org/project/matplotlib/) (install via pip)
+- (Recommended) [`pip`](https://pip.pypa.io/) for `pyproject.toml` (Use Ninja or Make if using Linux/MacOS)
+- [`numpy`](https://pypi.org/project/numpy/) (install via pip)
+- [`matplotlib`](https://pypi.org/project/matplotlib/) (install via pip)
 - [`scikit-build-core`](https://pypi.org/project/scikit-build-core/) (See Installation section)
 - [`build`](https://pypi.org/project/build/) (See Installation section)
 
@@ -62,8 +62,8 @@ n/a
 This project uses and incorporates third-party libraries under their respective licenses:
 
 ### Pybind11
-[Pybind11](https://github.com/pybind/pybind11) is provided under a BSD-style license that can be found in the [LICENSE](https://github.com/pybind/pybind11/blob/master/LICENSE)
+[`Pybind11`](https://github.com/pybind/pybind11) is provided under a BSD-style license that can be found in the [LICENSE](https://github.com/pybind/pybind11/blob/master/LICENSE)
 file.
 
 ### Eigen
-[Eigen](http://eigen.tuxfamily.org) is [Free Software](https://www.gnu.org/philosophy/free-sw.html), licensed under the [MPL2](https://www.mozilla.org/en-US/MPL/2.0/), which is a simple weak copyleft license. A copy of the license is provided in ```external/lib/eigen/LICENSE```
+[`Eigen`](http://eigen.tuxfamily.org) is [Free Software](https://www.gnu.org/philosophy/free-sw.html), licensed under the [MPL2](https://www.mozilla.org/en-US/MPL/2.0/), which is a simple weak copyleft license. A copy of the license is provided in ```external/lib/eigen/LICENSE```
