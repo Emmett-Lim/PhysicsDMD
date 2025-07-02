@@ -38,9 +38,15 @@ void EigenDMD::separateSnapshots(const Eigen::MatrixXcd& complex_matrix) {
 
 }
 
+const Eigen::MatrixXcd EigenDMD::reconstructData() {
+
+    return _dmd_modes * _time_dynamics;
+
+}
+
 void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank) {
 
-    if (static_cast<int>(complex_matrix.cols()) <= 1) {
+    if (static_cast<int>(complex_matrix.size()) < 4) {
         std::cout << "Cannot compute DMD on small or empty complex data!\n";
         return;
     }
@@ -114,6 +120,20 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     _dmd_modes  = _x_next * _svd._v_matrix * s_matrix_inv * _eigenvectors;
     _amplitudes = _dmd_modes.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(_x_current.col(0));
 
+    // Calculate the time dynamics of the system
+    std::cout << "Calculating time dynamics of the system.\n";
+    int num_rows         = _eigenvalues.size();
+    int total_time_steps = complex_matrix.cols();
+    _time_dynamics.resize(num_rows, total_time_steps);
+
+    for (int j = 0; j < total_time_steps; ++j) {
+        for (int k = 0; k < num_rows; ++k) {
+            _time_dynamics(k, j) = std::pow(_eigenvalues(k), j) * _amplitudes(k);
+        }
+    }
+
+    std::cout << "DMD algorithm has finished calculating the data.\n";
+
 }
 
 
@@ -182,6 +202,15 @@ PYBIND11_MODULE(eigen_dmd, handle) {
              &EigenDMD::getDynamicModes,
              py::return_value_policy::reference_internal,
              "Returns a 2D matrix containing complex dynamic mode data"
+            )
+        .def("getTimeDynamics",
+             &EigenDMD::getTimeDynamics,
+             py::return_value_policy::reference_internal,
+             "Returns a 2D matrix containing time dynamics of the system"
+            )
+        .def("reconstructData",
+             &EigenDMD::reconstructData,
+             "Returns a 2D matrix of a reconstructed version of original data"
             )
         ;
 

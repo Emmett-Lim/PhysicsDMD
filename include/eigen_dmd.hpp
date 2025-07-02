@@ -30,7 +30,9 @@ class EigenDMD {
 
         EigenSVD _svd;
 
-        Eigen::MatrixXcd _dynamic_matrix, _dmd_modes;
+        Eigen::MatrixXcd _dynamic_matrix;
+
+        Eigen::MatrixXcd _dmd_modes, _time_dynamics;
 
         Eigen::MatrixXcd _eigenvectors;
         Eigen::VectorXcd _eigenvalues;
@@ -46,10 +48,16 @@ class EigenDMD {
         void standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank = -1);    // complex double values
         //void standardDMD(const Eigen::MatrixXcf& complex_matrix);   // complex float values
 
+        const Eigen::MatrixXcd reconstructData();
+
         const EigenSVD& getSVDResult() const { return _svd; }
+
         const Eigen::VectorXcd& getEigenvalues() const { return _eigenvalues; } // Returns 1D data containing complex eigenvalues
         const Eigen::MatrixXcd& getEigenvectors() const { return _eigenvectors; }
+
         const Eigen::MatrixXcd& getDynamicModes() const { return _dmd_modes; }  // Returns a 2D matrix containing complex dynamic mode data
+        const Eigen::MatrixXcd& getTimeDynamics() const { return _time_dynamics; }
+
         const Eigen::VectorXcd& getAmplitudes() const { return _amplitudes; }
 
 };

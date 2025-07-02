@@ -1,6 +1,88 @@
 import numpy as npy
-import matplotlib as mplt
+import matplotlib.pyplot as mplt
 
-# import sys, os
-# sys.path.append(os.path.abspath(os.path.join('..', 'mylib')))
-# from mylib.eigen_module import * <-- change wildcard to specific module
+import utils.dmd_plotter
+from utils.dmd_plotter import eigenvalue_spectrum, dmd_modes_spatial, dmd_modes_temporal
+
+import utils.eigen_dmd
+from utils.eigen_dmd import MatrixTest, EigenDMD
+
+# Load complex data and x coordinates
+y_frames = npy.load("data/y_frames.npy", mmap_mode='r')
+x_coords = npy.loadtxt("data/x_coord.txt")
+t_coords = npy.arange(len(y_frames[0]))
+
+print("Size of Original Data: ", y_frames.shape)
+
+# Plot raw data of first 4 snapshots (x, y)
+mplt.subplot(1, 2, 1)
+for i in range(4):
+    mplt.plot(x_coords, npy.real(y_frames[:, i]), label=f"Frame {i}")
+
+mplt.xlabel("x")
+mplt.ylabel("y")
+mplt.title("Original Traveling Waves (Real Part)")
+mplt.legend()
+mplt.tight_layout()
+
+mplt.subplot(1, 2, 2)
+for i in range(4):
+    mplt.plot(x_coords, npy.imag(y_frames[:, i]), label=f"Frame {i}")
+
+mplt.xlabel("x")
+mplt.ylabel("y")
+mplt.title("Original Traveling Waves (Imaginary Part)")
+mplt.legend()
+mplt.tight_layout()
+
+mplt.show()
+
+print("Size of Original Data (Transposed): ", y_frames.T.shape)
+
+
+# Calculate DMD of the complex data
+dmd = EigenDMD()
+dmd.standardDMD(y_frames, reduced_rank=25)
+# dmd.standardDMD(y_frames) # This is for full rank, no reduced rank
+
+eigenvalues  = dmd.getEigenvalues()
+eigenvectors = dmd.getEigenvectors()
+
+
+# Plot results from DMD algorithm as visual graphs
+eigenvalue_spectrum(eigenvalues)
+mplt.show()
+
+print("Dynamic Mode Matrix Size: ", dmd.getDynamicModes().shape)
+dmd_modes_spatial(x_coords, dmd.getDynamicModes(), 25)
+mplt.show()
+
+print("Time Dynamics Matrix Size: ", dmd.getTimeDynamics().shape)
+dmd_modes_temporal(t_coords, dmd.getTimeDynamics(), 25)
+mplt.show()
+
+X_Rec = dmd.reconstructData()
+print("Size of Reconstructed Data: ", X_Rec.shape)
+
+# Plot Reconstructed Data of first 4 snapshots (x, y)
+mplt.subplot(1, 2, 1)
+for i in range(4):
+    mplt.plot(x_coords, npy.real(X_Rec[:, i]), label=f"Frame {i}")
+
+mplt.xlabel("x")
+mplt.ylabel("y")
+mplt.title("Reconstructed Traveling Waves (Real Part)")
+mplt.legend()
+mplt.tight_layout()
+
+mplt.subplot(1, 2, 2)
+for i in range(4):
+    mplt.plot(x_coords, npy.imag(X_Rec[:, i]), label=f"Frame {i}")
+
+mplt.xlabel("x")
+mplt.ylabel("y")
+mplt.title("Reconstructed Traveling Waves (Imaginary Part)")
+mplt.legend()
+mplt.tight_layout()
+
+mplt.show()

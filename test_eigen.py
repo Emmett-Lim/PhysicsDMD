@@ -1,7 +1,10 @@
 import numpy as npy
 import matplotlib.pyplot as mplt
+#import matplotlib.animation as animation
+
 import utils.dmd_plotter
-from utils.dmd_plotter import eigenvalue_spectrum
+from utils.dmd_plotter import eigenvalue_spectrum, dmd_modes_spatial, dmd_modes_temporal
+
 import utils.eigen_dmd
 from utils.eigen_dmd import MatrixTest, EigenDMD
 
@@ -37,63 +40,58 @@ def f2(x, t):
 
 nx = 65
 nt = 129
+
 x = npy.linspace(-5, 5, nx)
 t = npy.linspace(0, 4 * npy.pi, nt)
-
 xgrid, tgrid = npy.meshgrid(x, t)
 
 X1 = f1(xgrid, tgrid)
 X2 = f2(xgrid, tgrid)
 X = X1 + X2
 
-titles = ["$f_1(x,t)$", "$f_2(x,t)$", "$f$"]
-data = [X1, X2, X]
+print(X.shape)
 
-fig_0 = mplt.figure(figsize=(17, 6))
+titles = ["$f_1(x,t)$", "$f_2(x,t)$", "$f$"]
+data   = [X1, X2, X]
+
+fig = mplt.figure(figsize=(17, 6))
 for n, title, d in zip(range(131, 134), titles, data):
     mplt.subplot(n)
     mplt.pcolor(xgrid, tgrid, d.real)
     mplt.title(title)
-mplt.colorbar()
+    mplt.xlabel("Space")
+    mplt.ylabel("Time")
+    mplt.colorbar()
 mplt.show()
 
 dmd = EigenDMD()
+print(X.T.shape)
 dmd.standardDMD(X.T, reduced_rank=2)
 
 svd = dmd.getSVDResult()
 
-eigenvalues = dmd.getEigenvalues()
+eigenvalues  = dmd.getEigenvalues()
 eigenvectors = dmd.getEigenvectors()
 
 eigenvalue_spectrum(eigenvalues)
+mplt.show()
 
+print(dmd.getDynamicModes().shape)
+dmd_modes_spatial(x, dmd.getDynamicModes(), 2)
+mplt.show()
+
+print(dmd.getTimeDynamics().shape)
+dmd_modes_temporal(t, dmd.getTimeDynamics(), 2)
+mplt.show()
+
+X_Rec = dmd.reconstructData()
+print(X_Rec.shape)
+
+mplt.pcolor(xgrid, tgrid, X_Rec.T.real)
+mplt.title("$f_{reconstructed}$")
+mplt.xlabel("Space")
+mplt.ylabel("Time")
+mplt.colorbar()
 mplt.show()
 
 ### === EigenDMD Test === ###
-
-#data  = npy.load("data/y_frames.npy", mmap_mode='r')
-#data2 = npy.loadtxt("data/x_coord.txt")
-#print(data.dtype)
-#print(data)
-#print("Data size: ", data.shape)
-#print("Data2 size: ", data2.shape)
-
-#y_frames = npy.load("data/y_frames.npy", mmap_mode='r')
-#x_coords = npy.loadtxt("data/x_coord.txt")
-#print("y_frames size: ", y_frames.shape)
-#print("x_coords size: ", x_coords.shape)
-#
-#mplt.pcolormesh(x_coords, npy.arange(y_frames.shape[1]), y_frames.real.T, shading='auto')
-#mplt.xlabel("x")
-#mplt.ylabel("Time Index")
-#mplt.title("Real Part of Signal Over Space and Time")
-#mplt.colorbar()
-#
-#mplt.show()
-
-#mplt.plot(x_coords, y_frames[:, 0].real)
-#mplt.title("State at t = 0 over spatial domain")
-#mplt.xlabel("x")
-#mplt.ylabel("Re(y)")
-#
-#mplt.show()
