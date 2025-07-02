@@ -20,7 +20,7 @@ Clone this repository and note the `--recursive` option which is
 needed for the Pybind11 and Eigen submodule:
 
 ```bash
-git clone --recursive-submodules <the-repo-url>
+git clone --recurse-submodules <the-repo-url>
 cd ./pybind11-setup
 ```
 
