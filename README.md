@@ -9,6 +9,8 @@ to create a Python module from C++.
 - **CMake ≥ 3.14** (3.14+ is required on Windows; 3.4 is no longer valid with modern CMake)
 - **Python ≥ 3.6**
 - (Recommended) [pip](https://pip.pypa.io/) for `pyproject.toml` (Use Ninja or Make if using Linux/MacOS)
+- [numpy](https://pypi.org/project/numpy/) (install via pip)
+- [matplotlib](https://pypi.org/project/matplotlib/) (install via pip)
 
 ## Installation
 
