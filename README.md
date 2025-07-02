@@ -11,6 +11,8 @@ to create a Python module from C++.
 - (Recommended) [pip](https://pip.pypa.io/) for `pyproject.toml` (Use Ninja or Make if using Linux/MacOS)
 - [numpy](https://pypi.org/project/numpy/) (install via pip)
 - [matplotlib](https://pypi.org/project/matplotlib/) (install via pip)
+- [`scikit-build-core`](https://pypi.org/project/scikit-build-core/) (See Installation section)
+- [`build`](https://pypi.org/project/build/) (See Installation section)
 
 ## Installation
 
