@@ -16,8 +16,14 @@ Clone this repository and note the `--recursive` option which is
 needed for the Pybind11 and Eigen submodule:
 
 ```bash
-git clone --recursive <the-repo-url>
+git clone --recursive-submodules <the-repo-url>
 cd ./pybind11-setup
+```
+
+For already cloned repos, use:
+
+```bash
+git submodule update --init --recursive
 ```
 
 For use of pip, please install scikit-build-core: ```pip install scikit-build-core build```
