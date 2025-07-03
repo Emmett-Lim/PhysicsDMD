@@ -1,6 +1,15 @@
 import numpy as npy
 import matplotlib.pyplot as mplt
 
+
+def singular_value_plot(singular_values):
+    index = npy.arange(singular_values.size)
+    mplt.scatter(index, singular_values)
+    mplt.xlabel("Mode Index")
+    mplt.ylabel("Singular Values")
+    mplt.title("Singular Values Plot")
+
+
 def eigenvalue_spectrum(eigenvalues):
     theta = npy.linspace(0, 2*npy.pi, 100)
     mplt.scatter(eigenvalues.real, eigenvalues.imag)

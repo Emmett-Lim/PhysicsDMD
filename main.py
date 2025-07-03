@@ -2,7 +2,8 @@ import numpy as npy
 import matplotlib.pyplot as mplt
 
 import utils.dmd_plotter
-from utils.dmd_plotter import eigenvalue_spectrum, dmd_modes_spatial, dmd_modes_temporal
+#from utils.dmd_plotter import eigenvalue_spectrum, dmd_modes_spatial, dmd_modes_temporal, singular_value_plot
+from utils.dmd_plotter import *
 
 import utils.eigen_dmd
 from utils.eigen_dmd import MatrixTest, EigenDMD
@@ -42,27 +43,33 @@ print("Size of Original Data (Transposed): ", y_frames.T.shape)
 
 # Calculate DMD of the complex data
 dmd = EigenDMD()
-dmd.standardDMD(y_frames, reduced_rank=25)
-# dmd.standardDMD(y_frames) # This is for full rank, no reduced rank
+dmd.standardDMD(y_frames, reduced_rank=10)
+#dmd.standardDMD(y_frames) # This is for full rank
+
+svd = dmd.getSVDResult()
 
 eigenvalues  = dmd.getEigenvalues()
 eigenvectors = dmd.getEigenvectors()
 
 
 # Plot results from DMD algorithm as visual graphs
+singular_value_plot(svd.s_values)
+mplt.show()
+
 eigenvalue_spectrum(eigenvalues)
 mplt.show()
 
 print("Dynamic Mode Matrix Size: ", dmd.getDynamicModes().shape)
-dmd_modes_spatial(x_coords, dmd.getDynamicModes(), 25)
+dmd_modes_spatial(x_coords, dmd.getDynamicModes(), 7)
 mplt.show()
 
 print("Time Dynamics Matrix Size: ", dmd.getTimeDynamics().shape)
-dmd_modes_temporal(t_coords, dmd.getTimeDynamics(), 25)
+dmd_modes_temporal(t_coords, dmd.getTimeDynamics(), 7)
 mplt.show()
 
 X_Rec = dmd.reconstructData()
 print("Size of Reconstructed Data: ", X_Rec.shape)
+
 
 # Plot Reconstructed Data of first 4 snapshots (x, y)
 mplt.subplot(1, 2, 1)

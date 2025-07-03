@@ -3,7 +3,8 @@ import matplotlib.pyplot as mplt
 #import matplotlib.animation as animation
 
 import utils.dmd_plotter
-from utils.dmd_plotter import eigenvalue_spectrum, dmd_modes_spatial, dmd_modes_temporal
+#from utils.dmd_plotter import eigenvalue_spectrum, dmd_modes_spatial, dmd_modes_temporal, singular_value_plot
+from utils.dmd_plotter import *
 
 import utils.eigen_dmd
 from utils.eigen_dmd import MatrixTest, EigenDMD
@@ -67,11 +68,15 @@ mplt.show()
 dmd = EigenDMD()
 print(X.T.shape)
 dmd.standardDMD(X.T, reduced_rank=2)
+#dmd.standardDMD(X.T)
 
 svd = dmd.getSVDResult()
 
 eigenvalues  = dmd.getEigenvalues()
 eigenvectors = dmd.getEigenvectors()
+
+singular_value_plot(svd.s_values)
+mplt.show()
 
 eigenvalue_spectrum(eigenvalues)
 mplt.show()
