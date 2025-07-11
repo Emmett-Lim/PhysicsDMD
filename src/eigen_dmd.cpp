@@ -44,7 +44,7 @@ const Eigen::MatrixXcd EigenDMD::reconstructData() {
 
 }
 
-void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank) {
+void EigenDMD::calculateSVD(const Eigen::MatrixXcd& complex_matrix) {
 
     if (static_cast<int>(complex_matrix.size()) < 4) {
         std::cout << "Cannot compute DMD on small or empty complex data!\n";
@@ -67,6 +67,14 @@ void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_r
     _svd._u_matrix = svd.matrixU();
     _svd._s_values = svd.singularValues();   // Note: Returned as a vector, not a matrix. Use .asDiagonal() to convert into matrix form
     _svd._v_matrix = svd.matrixV();          // Note: This is not given in its adjoint version (V*)
+
+}
+
+void EigenDMD::standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank) {
+
+    if (_x_current.rows() == 0 && _x_current.cols() == 0) {
+        calculateSVD(complex_matrix);
+    }
 
     // Apply rank-reduction if reduced_rank > -1
     if (reduced_rank >= 0) {
@@ -182,6 +190,11 @@ PYBIND11_MODULE(eigen_dmd, handle) {
              "Compute Dynamic Mode Decomposition",
              py::arg("complex_matrix"),
              py::arg("reduced_rank") = -1
+            )
+        .def("calculateSVD",
+             &EigenDMD::calculateSVD,
+             "Compute Singular Value Decomposition for snapshot current",
+             py::arg("complex_matrix")
             )
         .def("getSVDResult",
              &EigenDMD::getSVDResult,

@@ -48,6 +48,8 @@ class EigenDMD {
         void standardDMD(const Eigen::MatrixXcd& complex_matrix, int reduced_rank = -1);    // complex double values
         //void standardDMD(const Eigen::MatrixXcf& complex_matrix);   // complex float values
 
+        void calculateSVD(const Eigen::MatrixXcd& complex_matrix);
+
         const Eigen::MatrixXcd reconstructData();
 
         const EigenSVD& getSVDResult() const { return _svd; }
